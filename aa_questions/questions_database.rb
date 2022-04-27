@@ -76,22 +76,25 @@ class User
             question_likes.user_id = ?
         SQL
         karma
-        #questions_per_user = QuestionsDatabase.instance.execture(<<-SQL, id)
-        #SELECT
-        #    COUNT(question_id)
-        #FROM
-        #    questions
-        #LEFT OUTER JOIN
-        #    question_likes
-        #ON
-        #    questions.id = question_id
-        #WHERE
-        #    user_id = ?
-        #GROUP BY
-        #    user_id
-        #SQL
-        #likes_per_question
-        #questions_per_user
+    end
+    def save
+        if !@id 
+            QuestionsDatabase.instance.execute(<<-SQL, @fname, @id, @lname)
+                INSERT INTO
+                users (fname, id, lname)
+                VALUES (?, ?, ?)
+                SQL
+                @id = QuestionsDatabase.instance.last_insert_row_id
+        else
+            QuestionsDatabase.instance.execute(<<-SQL, @fname, @lname, @id)
+                UPDATE 
+                users 
+                SET
+                fname = ?, lname = ?
+                WHERE
+                id = ?
+                SQL
+        end
     end
 
     
@@ -153,6 +156,25 @@ class Question
 
     def self.most_liked(n)
        QuestionLike.most_liked_questions(n) 
+    end
+    def save
+        if !@id 
+            QuestionsDatabase.instance.execute(<<-SQL, @id, @title, @body, @author_id)
+                INSERT INTO
+                questions (id, title, body, author_id)
+                VALUES (?, ?, ?, ?)
+                SQL
+                @id = QuestionsDatabase.instance.last_insert_row_id
+        else
+            QuestionsDatabase.instance.execute(<<-SQL,@title, @body, @author_id, @id)
+                UPDATE 
+                questions 
+                SET
+                title = ?, body = ?, author_id
+                WHERE
+                id = ?
+                SQL
+        end
     end
 end
 
@@ -311,7 +333,25 @@ class Reply
     def child_replies
         Reply.find_by_reply_id(@id)
     end
-    
+    def save
+        if !@id 
+            QuestionsDatabase.instance.execute(<<-SQL, @id, @question_id, @reply_id, @user_id)
+                INSERT INTO
+                replies (id, question_id, reply_id, user_id)
+                VALUES (?, ?, ?, ?)
+                SQL
+                @id = QuestionsDatabase.instance.last_insert_row_id
+        else
+            QuestionsDatabase.instance.execute(<<-SQL, @question_id, @reply_id, @user_id, @id)
+                UPDATE 
+                replies 
+                SET
+                questions_id = ?, reply_id = ?, user_id = ?
+                WHERE
+                id = ?
+                SQL
+        end
+    end
 end
 
 class QuestionLike

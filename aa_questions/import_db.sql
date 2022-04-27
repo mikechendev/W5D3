@@ -37,7 +37,6 @@ CREATE TABLE replies (
     question_id INTEGER NOT NULL,
     reply_id INTEGER,
     user_id INTEGER NOT NULL,
-    body TEXT NOT NULL,
 
     FOREIGN KEY (question_id) REFERENCES questions(id),
     FOREIGN KEY (reply_id) REFERENCES replies(id),
@@ -80,12 +79,12 @@ VALUES
 
 INSERT INTO 
     replies
-    (question_id, reply_id, user_id, body)
+    (question_id, reply_id, user_id)
 VALUES
-    (1, NULL, 1, 'testing'),
-    (1, 1, 1, 'this works'),
-    (2, NULL, 2, 'parent reply'),
-    (2, 3, 1, 'child reply');
+    (1, NULL, 1),
+    (1, 1, 1),
+    (2, NULL, 2),
+    (2, 3, 1);
 
 INSERT INTO 
     question_likes
