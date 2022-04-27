@@ -91,7 +91,9 @@ INSERT INTO
     question_likes
     (question_id, user_id)
 VALUES
-    (1, 1);
+    (1, 1),
+    (1, 2),
+    (2, 1);
 
 
 
